@@ -90,7 +90,8 @@ def decipher_condition_tree(i_condition):
     result = None
 
     if(is_valid_simple_condition(condition)):
-        result = CondTreeNode(data=condition)
+        result = CondTreeNode()
+        result.data = condition
     else:
         checked_all_options = False
         and_index = condition.find("AND")
@@ -158,10 +159,10 @@ def get_query():
     where_index = query.find("WHERE")
     table_list = decipher_table_list(query[from_index+4:where_index])
     attribute_list = decipher_attribute_list(query[select_index+6:from_index])
-    print(*table_list, *attribute_list)
+    
     condition_tree = decipher_condition_tree(query[where_index+5:])
-    print(table_list + attribute_list + condition_tree)
-    return query
+    parse_tree = (table_list,attribute_list, condition_tree)
+    return parse_tree
 
 
 def question_1():
