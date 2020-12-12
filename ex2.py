@@ -73,8 +73,11 @@ def check_both_sides_of_operator(i_condition, i_operator, i_index,  i_checked_al
             left_operator_part = i_condition[0:i_index]
             right_operator_part = i_condition[i_index+offset:]
             if(decipher_condition_tree(left_operator_part) != None and decipher_condition_tree(right_operator_part) != None):
-                result = CondTreeNode(data=i_operator, left=decipher_condition_tree(
-                    left_operator_part), right=decipher_condition_tree(right_operator_part))
+                result = CondTreeNode()
+                result.data = i_operator
+                result.left = decipher_condition_tree(
+                    left_operator_part)
+                result.right = decipher_condition_tree(right_operator_part)
             else:
                 i_index = i_condition.find(
                     i_operator, i_index+offset)
@@ -159,9 +162,9 @@ def get_query():
     where_index = query.find("WHERE")
     table_list = decipher_table_list(query[from_index+4:where_index])
     attribute_list = decipher_attribute_list(query[select_index+6:from_index])
-    
+
     condition_tree = decipher_condition_tree(query[where_index+5:])
-    parse_tree = (table_list,attribute_list, condition_tree)
+    parse_tree = (table_list, attribute_list, condition_tree)
     return parse_tree
 
 
