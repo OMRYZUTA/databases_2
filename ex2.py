@@ -2,6 +2,7 @@ class CondTreeNode:
     data = None
     left = None
     right = None
+    
     def to_string(self):
         result = ""
         if self.left:
