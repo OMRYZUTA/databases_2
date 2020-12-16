@@ -86,6 +86,7 @@ def is_valid_simple_condition(i_simple_condition):
 
 
 def check_both_sides_of_operator(i_condition, i_operator, i_index,  i_checked_all_options):
+    offset = 0
     if(i_operator == "AND"):
         offset = 3
     elif(i_operator == "OR"):
@@ -190,11 +191,16 @@ def get_query():
     parse_tree = (table_list, attribute_list, condition_tree)
     return parse_tree
 
+def apply_5a(i_table_list, i_attribute_list, i_condition_tree):
+    if(len(i_table_list)==1):
+        None
+        #check all atributes in p 
+
 
 def question_1():
     (table_list, attribute_list, condition_tree) = get_query()
     algebric_expression =convert_algebric_expression( table_list, attribute_list, condition_tree)
-    optimization_rule = get_optimization_rule()
+    Foptimization_rule = get_optimization_rule()
 
 
 def show_main_menu():
