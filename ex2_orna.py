@@ -101,7 +101,9 @@ def apply_rule_4(i_expression):
             #outer_sigma will be the new expression's sigma
             new_expression.sigma = SIGMA(cond.left,inner_sigma)
             new_expression.pi=PI(i_expression.pi.attribute_list, new_expression.sigma)
-    print("after applying rule 4:")        
+    
+    print("rule 4: SIGMA[p1 AND p2](R) = SIGMA[p1](SIGMA[p2](R))")        
+    print("after applying rule:")        
     print (new_expression.pi)
     return new_expression.pi
      
@@ -119,7 +121,7 @@ def main():
         table_list, attribute_list, condition_tree)
     print("initial algebric expression")
     print(alg_expr.pi)
-
+    print()
     apply_rule_4(alg_expr)
 
 
