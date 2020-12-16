@@ -45,7 +45,7 @@ class CARTESIAN:
         return other + str(self)
 
 
-class SIGMA:
+class SIGMA:    
     condition = None
     apply_to = None
 
@@ -65,17 +65,46 @@ class SIGMA:
     def __radd__(self, other):
         return other + str(self)
 
+class Algebric_Expression:
+    #how can we indicate operators order in terms of inner-to-outer??
+    pi = None
+    sigma = None
+    cartesian = None
 
-def build_initial_algebric_expression(table_list, attribute_list, condition_tree):
-    cartesian = CARTESIAN(table_list[0], None)
+    def __init__(self, pi, sigma, cartesian):
+        self.pi = pi
+        self.sigma = sigma
+        self.cartesian = cartesian
+
+
+def build_initial_algebric_expression(
+    table_list, attribute_list, condition_tree):
+    
+    cartesian = CARTESIAN(table_list[0], table_list[0])
+    #if there's only one table it's a cartesian with itself?? delete later
     if(len(table_list) == 2):
         cartesian.scheme2 = table_list[1]    
 
     sigma = SIGMA(condition_tree, cartesian)
-    pi = PI(attribute_list, sigma)
-    
-    print(pi)
+    pi = PI(attribute_list, sigma)    
+   
+    initial_expr = Algebric_Expression(pi, sigma, cartesian)
+    return initial_expr
 
+def apply_rule_4(i_expression):
+    new_expression =  i_expression  
+    cond = i_expression.sigma.condition
+    if(cond.node_type=="LOGIC_OP"):
+        if(cond.data=="AND"):
+            #doesn't change cartesian
+            inner_sigma = SIGMA(cond.right,new_expression.cartesian)
+            #outer_sigma will be the new expression's sigma
+            new_expression.sigma = SIGMA(cond.left,inner_sigma)
+            new_expression.pi=PI(i_expression.pi.attribute_list, new_expression.sigma)
+    print("after applying rule 4:")        
+    print (new_expression.pi)
+    return new_expression.pi
+     
 
 def main():
     table_list = None
@@ -84,9 +113,14 @@ def main():
 
     query_str = input("Enter your query: ")
     (table_list, attribute_list, condition_tree) = ex2_parser.parse_query(query_str)
+    query_tuple = (table_list, attribute_list, condition_tree)
 
-    build_initial_algebric_expression(
+    alg_expr = build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
+    print("initial algebric expression")
+    print(alg_expr.pi)
+
+    apply_rule_4(alg_expr)
 
 
 if __name__ == "__main__":
