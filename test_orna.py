@@ -2,7 +2,8 @@ import ex2_parser
 
 
 def main():
-    ex2_parser.parse_query("SELECT R.A FROM R,S WHERE R.A=10 AND R.B>R.A;")
+    (table_list, attribute_list, condition_tree) = ex2_parser.parse_query("SELECT R.A,R.B FROM R,S WHERE R.A=10 AND R.B>R.A;")
+    print(table_list, attribute_list, condition_tree)
     # ex2_parser.parse_query("SELECT R.A FROM R,S WHERE (R.A=10 AND R.B>R.A) OR (R.C=12 AND R.A>3);")
 
 

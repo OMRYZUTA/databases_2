@@ -2,30 +2,30 @@ class CondTreeNode:
     data = None
     left = None
     right = None
-    
+
     def to_string(self):
         result = ""
         if self.left:
-            result+=self.left.to_string()
+            result += self.left.to_string()
         if self.data:
-            result+= self.data
+            result += self.data
         if self.right:
-           result+=self.right.to_string()
+            result += self.right.to_string()
         return result
-
 
 
 def convert_algebric_expression(i_table_list, i_attribute_list, i_condition_tree):
     #my_string = ','.join(my_list)
-    algebric_expression ="PI["
-    
-    algebric_expression+=','.join(i_attribute_list)
-    algebric_expression+="](SIGMA["
-    algebric_expression+= i_condition_tree.to_string()
-    algebric_expression+="](CARTESIAN("
-    algebric_expression+=','.join(i_table_list)
-    algebric_expression+=")))"
+    algebric_expression = "PI["
+
+    algebric_expression += ','.join(i_attribute_list)
+    algebric_expression += "](SIGMA["
+    algebric_expression += i_condition_tree.to_string()
+    algebric_expression += "](CARTESIAN("
+    algebric_expression += ','.join(i_table_list)
+    algebric_expression += ")))"
     return algebric_expression
+
 
 def is_valid_attribute(i_attribute):
     attribute = i_attribute.strip()
@@ -191,15 +191,17 @@ def get_query():
     parse_tree = (table_list, attribute_list, condition_tree)
     return parse_tree
 
+
 def apply_5a(i_table_list, i_attribute_list, i_condition_tree):
-    if(len(i_table_list)==1):
+    if(len(i_table_list) == 1):
         None
-        #check all atributes in p 
+        # check all atributes in p
 
 
 def question_1():
     (table_list, attribute_list, condition_tree) = get_query()
-    algebric_expression =convert_algebric_expression( table_list, attribute_list, condition_tree)
+    algebric_expression = convert_algebric_expression(
+        table_list, attribute_list, condition_tree)
     Foptimization_rule = get_optimization_rule()
 
 

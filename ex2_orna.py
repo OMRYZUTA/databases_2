@@ -4,16 +4,16 @@ import ex2_parser
 
 class PI:
     attribute_list = None
-    apply_to = None
+    applies_to = None
 
-    def __init__(self, attribute_list, apply_to):
+    def __init__(self, attribute_list, applies_to):
         self.attribute_list = attribute_list
-        self.apply_to = apply_to
+        self.applies_to = applies_to
 
     def __str__(self):
         att_list_str = " ".join(self.attribute_list)
         string = "PI["+att_list_str+"]"
-        string += "("+self.apply_to+")"
+        string += "("+self.applies_to+")"
 
         return string
 
@@ -22,6 +22,20 @@ class PI:
 
     def __radd__(self, other):
         return other + str(self)
+
+    def apply_rule(self, rule_type):
+        if (rule_type == "5a"):
+            if (self.applies_to.get_type() == "SIGMA"):
+                sigma = self.applies_to
+                if (sigma.check_all_attributes_from(self.attribute_list)):
+                    self.applies_to = sigma.applies_to
+                    sigma.applies_to = self
+                    return sigma
+
+        return self
+
+    def get_type(self):
+        return "PI"
 
 
 class CARTESIAN:
@@ -44,19 +58,22 @@ class CARTESIAN:
     def __radd__(self, other):
         return other + str(self)
 
+    def get_type(self):
+        return "CARTESIAN"
 
-class SIGMA:    
+
+class SIGMA:
     condition = None
-    apply_to = None
+    applies_to = None
 
-    def __init__(self, condition, apply_to):
+    def __init__(self, condition, applies_to):
         self.condition = condition
-        self.apply_to = apply_to
+        self.applies_to = applies_to
 
     def __str__(self):
         string = "SIGMA"
         string += "["+self.condition+"]"
-        string += "("+self.apply_to+")"
+        string += "("+self.applies_to+")"
         return string
 
     def __add__(self, other):
@@ -65,64 +82,73 @@ class SIGMA:
     def __radd__(self, other):
         return other + str(self)
 
+    def check_all_attributes_from(self, attribute_list):
+        result = True
+        all_cond_attributes = self.condition.get_all_atts_in_cond()
+        for att in all_cond_attributes:
+            result = result and (att in attribute_list)
+        
+        return result
+
+    def get_type(self):
+        return "SIGMA"
+
+
 class Algebric_Expression:
-    #how can we indicate operators order in terms of inner-to-outer??
-    pi = None
-    sigma = None
-    cartesian = None
+    root = None
 
-    def __init__(self, pi, sigma, cartesian):
-        self.pi = pi
-        self.sigma = sigma
-        self.cartesian = cartesian
+    def __init__(self, root):
+        self.root = root
 
+    def __str__(self):
+        return str(self.root)
 
-def build_initial_algebric_expression(
-    table_list, attribute_list, condition_tree):
-    
-    cartesian = CARTESIAN(table_list[0], table_list[0])
-    #if there's only one table it's a cartesian with itself?? delete later
-    if(len(table_list) == 2):
-        cartesian.scheme2 = table_list[1]    
+    def apply_rule(self, rule_type):
+        self.root = self.root.apply_rule(rule_type)
 
-    sigma = SIGMA(condition_tree, cartesian)
-    pi = PI(attribute_list, sigma)    
-   
-    initial_expr = Algebric_Expression(pi, sigma, cartesian)
-    return initial_expr
+    def build_initial_algebric_expression(
+            table_list, attribute_list, condition_tree):
+
+        cartesian = CARTESIAN(table_list[0], table_list[0])
+        # if there's only one table it's a cartesian with itself?? delete later
+        if(len(table_list) == 2):
+            cartesian.scheme2 = table_list[1]
+
+        sigma = SIGMA(condition_tree, cartesian)
+        pi = PI(attribute_list, sigma)
+
+        return Algebric_Expression(pi)
+
 
 def apply_rule_4(i_expression):
-    new_expression =  i_expression  
+    new_expression = i_expression
     cond = i_expression.sigma.condition
-    if(cond.node_type=="LOGIC_OP"):
-        if(cond.data=="AND"):
-            #doesn't change cartesian
-            inner_sigma = SIGMA(cond.right,new_expression.cartesian)
-            #outer_sigma will be the new expression's sigma
-            new_expression.sigma = SIGMA(cond.left,inner_sigma)
-            new_expression.pi=PI(i_expression.pi.attribute_list, new_expression.sigma)
-    
-    print("rule 4: SIGMA[p1 AND p2](R) = SIGMA[p1](SIGMA[p2](R))")        
-    print("after applying rule:")        
-    print (new_expression.pi)
+    if(cond.node_type == "LOGIC_OP"):
+        if(cond.data == "AND"):
+            # doesn't change cartesian
+            inner_sigma = SIGMA(cond.right, new_expression.cartesian)
+            # outer_sigma will be the new expression's sigma
+            new_expression.sigma = SIGMA(cond.left, inner_sigma)
+            new_expression.pi = PI(
+                i_expression.pi.attribute_list, new_expression.sigma)
+
     return new_expression.pi
-     
+
 
 def main():
-    table_list = None
-    attribute_list = None
-    condition_tree = None
-
     query_str = input("Enter your query: ")
-    (table_list, attribute_list, condition_tree) = ex2_parser.parse_query(query_str)
-    query_tuple = (table_list, attribute_list, condition_tree)
+    parsed_query = ex2_parser.parse_query(query_str)
+    if (not parsed_query):
+        return
 
-    alg_expr = build_initial_algebric_expression(
+    (table_list, attribute_list, condition_tree) = parsed_query
+    alg_expr = Algebric_Expression.build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
     print("initial algebric expression")
-    print(alg_expr.pi)
-    print()
-    apply_rule_4(alg_expr)
+    print(alg_expr)
+    alg_expr.apply_rule("5a")
+    # apply_rule_4(alg_expr)
+    print(alg_expr)
 
 
 if __name__ == "__main__":

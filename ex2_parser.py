@@ -4,9 +4,11 @@ class cond_tree_node:
     left = None
     right = None
 
-    def __init__(self, data, node_type):
+    def __init__(self, data, node_type, left=None, right=None):
         self.data = data
         self.node_type = node_type
+        self.left = left
+        self.right = right
 
     def __str__(self):
         result = ""
@@ -24,36 +26,48 @@ class cond_tree_node:
 
     def __radd__(self, other):
         return other + str(self)
-
-
-def is_valid_table(i_table):
-    table = i_table.strip()
-    return (table == "R" or table == "S")
+    
+    def get_all_atts_in_cond(self):
+        if (self.left is None and self.right is None): # is leaf
+            if (self.node_type == "ATTRIBUTE"):
+                return [self.data]
+            else:
+                return []
+        
+        return self.left.get_all_atts_in_cond() + self.right.get_all_atts_in_cond()
 
 
 valid_attributes = [
     'R.A', 'R.B', 'R.C', 'R.D', 'R.E',
     'S.D', 'S.E', 'S.F', 'S.H', 'S.I']
 
-# returns node in condition tree (in this case leaf)
+
+def get_valid_table(i_table):
+    result = None
+    table = i_table.strip()
+    if (table == "R" or table == "S"):
+        result = table
+
+    return result
 
 
-def get_valid_attribute(i_attribute):
+def get_valid_attribute_node(i_attribute):
+    """returns node in condition tree (in this case leaf)"""
     new_node = None
-    attribute = i_attribute.strip()
+    attribute = get_valid_att(i_attribute)
 
-    if (attribute in valid_attributes):
+    if (attribute):
         new_node = cond_tree_node(attribute, "ATTRIBUTE")
 
     return new_node
 
 
-# returns a cond_tree_node with constant
-def get_valid_constant(i_constant):
+def get_valid_constant_node(i_constant):
+    """returns a cond_tree_node with constant"""
     new_node = None
     constant = i_constant.strip()
     # because it's a valid query - will either be attribute or integer
-    new_node = get_valid_attribute(constant)
+    new_node = get_valid_attribute_node(constant)
     if(new_node is None and constant.isnumeric()):
         new_node = cond_tree_node(constant, "INTEGER")
 
@@ -80,8 +94,8 @@ def find_valid_operator(i_simple_condition):
     return result
 
 
-# returns cond_tree_node which is a root of simple-condition-sub-tree
-def get_valid_simple_condition(i_simple_condition):
+def get_valid_simple_condition_node(i_simple_condition):
+    """returns cond_tree_node which is a root of simple-condition-sub-tree"""
     new_node = None
     simple_condition = i_simple_condition.strip()
 
@@ -89,24 +103,19 @@ def get_valid_simple_condition(i_simple_condition):
     if(operator != -1):
         parts_array = simple_condition.split(operator)
 
-        left_node = get_valid_constant(parts_array[0])
-        right_node = get_valid_constant(parts_array[1])
+        left_node = get_valid_constant_node(parts_array[0])
+        right_node = get_valid_constant_node(parts_array[1])
         if(left_node and right_node):
-            new_node = cond_tree_node(operator, "REL_OP")
-            new_node.left = left_node
-            new_node.right = right_node
+            new_node = cond_tree_node(
+                operator, "REL_OP", left_node, right_node)
 
     return new_node
 
-# function used in get_valid_condition
-# returns (operator_index, new_node, checked_all_options)
-
 
 def check_both_sides_of_operator(i_condition, i_operator, i_index, i_node, i_checked_all_options):
-    if(i_operator == "AND"):
-        offset = 3
-    elif(i_operator == "OR"):
-        offset = 2
+    """function used in get_valid_condition"""
+    """returns (operator_index, new_node, checked_all_options)"""
+    offset = 3 if i_operator == "AND" else 2  # either "AND" or "OR"
 
     if(i_condition[i_index-1] == ")" or i_condition[i_index-1] == " "):
         if(i_condition[i_index+offset] == "(" or i_condition[i_index+offset] == " "):
@@ -114,24 +123,24 @@ def check_both_sides_of_operator(i_condition, i_operator, i_index, i_node, i_che
             right_node = get_valid_condition(i_condition[i_index+offset:])
 
             if(left_node and right_node):
-                i_node = cond_tree_node(i_operator, "LOGIC_OP")
-                i_node.left = left_node
-                i_node.right = right_node
+                i_node = cond_tree_node(
+                    i_operator, "LOGIC_OP", left_node, right_node)
             else:
                 i_index = i_condition.find(i_operator, i_index+offset)
         else:
             i_checked_all_options = True
     else:
         i_checked_all_options = True
+
     return(i_index, i_node, i_checked_all_options)
 
 
-# returns cond_tree_node which is a root of a condition tree
 def get_valid_condition(i_condition):
+    """returns cond_tree_node which is a root of a condition tree"""
     condition = i_condition.strip()
     new_node = None
 
-    new_node = get_valid_simple_condition(condition)
+    new_node = get_valid_simple_condition_node(condition)
     if(new_node):
         return new_node
     else:  # meaning it's more than just a simple condition
@@ -155,50 +164,54 @@ def get_valid_condition(i_condition):
 
     return new_node
 
-# after handling optional distinct and astrix
 
+def get_valid_att(i_att):
+    result = None
+    att = i_att.strip()
 
-def decipher_attribute_list(i_att_list):
-    att_list = i_att_list.strip()
-    att_list = att_list.split(",")
-    att_list = list(map(str.strip, att_list))
-    return att_list
-
-
-# after handling optional distinct
-def get_valid_attribute_list(i_attribute_list):
-    attribute_list = None
-    att_list = i_attribute_list.strip()
-    index_of_astrix = att_list.find("*")
-
-    if(index_of_astrix == 0):
-        if(att_list == "*"):  # the attribute list is only *
-            attribute_list = valid_attributes  # replacing astrix withh all attributes
-    else:
-        attribute_list = decipher_attribute_list(att_list)
-
-    return attribute_list
-
-
-def is_valid_table_list(i_table_list):
-    table_list = i_table_list.strip()
-
-    if(is_valid_table(table_list)):
-        result = True
-    else:
-        comma_index = table_list.find(",")
-        if(comma_index == -1):
-            result = False
-        else:
-            result = is_valid_table(table_list[0:comma_index]) and is_valid_table_list(
-                table_list[comma_index+1:])
+    if (att in valid_attributes):
+        result = att
 
     return result
 
-# returns a list of attributes
+
+def get_valid_att_list(i_att_list):
+    att_list = i_att_list.strip()
+    result = get_valid_att(att_list)
+    if (result):
+        result = [result]
+    else:
+        comma_index = att_list.find(",")
+        if (comma_index > 0):
+            first_attribute = get_valid_att(att_list[0:comma_index])
+            if (first_attribute):
+                other_attributes = get_valid_att_list(att_list[comma_index+1:])
+                if (other_attributes):
+                    result = [first_attribute] + other_attributes
+
+    return result
+
+
+def get_valid_table_list(i_table_list):
+    table_list = i_table_list.strip()
+    result = get_valid_table(table_list)
+    if (result):
+        # if we have a single table, return as a list with one element
+        result = [result]
+    else:
+        comma_index = table_list.find(",")
+        if(comma_index > 0):
+            first_table = get_valid_table(table_list[0:comma_index])
+            if (first_table):
+                other_tables = get_valid_table_list(table_list[comma_index+1:])
+                if (other_tables):
+                    result = [first_table] + other_tables
+
+    return result
 
 
 def get_attribute_list(i_select_part):
+    """returns a list of attributes"""
     attribute_list = None
     # i_select_part starts with "select" and there has to be a space right after it
     if (i_select_part[6] == " "):
@@ -206,8 +219,14 @@ def get_attribute_list(i_select_part):
         distinct_index = select_part.find("DISTINCT")
         if(distinct_index == 0):
             # attribute list starts after the distinct
-            select_part = select_part[8:]
-        attribute_list = get_valid_attribute_list(select_part)
+            select_part = select_part[8:].strip()
+
+        index_of_astrix = select_part.find("*")
+        if(index_of_astrix == 0):
+            if(select_part == "*"):  # the attribute list is only *
+                attribute_list = valid_attributes  # replacing astrix withh all attributes
+        else:
+            attribute_list = get_valid_att_list(select_part)
 
     return attribute_list
 
@@ -218,9 +237,7 @@ def get_table_list(i_from_part):
     # i_from_part starts with "from" and there has to be a space right after it
     if(i_from_part[4] == " "):
         from_part = i_from_part[4:].strip()
-        if(is_valid_table_list(from_part)):
-            table_list = from_part.split(",")
-            table_list = list(map(str.strip, table_list))
+        table_list = get_valid_table_list(from_part)
 
     return table_list
 
@@ -234,38 +251,36 @@ def get_condition_tree(i_where_part):
 
     return condition_tree
 
-# returns tuple (table_list, attribute_list, condition_tree)
-
 
 def parse_query(i_query):
-    table_list = None
-    attribute_list = None
-    condition_tree = None
+    """returns tuple (table_list, attribute_list, condition_tree) or None if query is invalid"""
     query = i_query.strip()
 
-    if(query[-1] == ";"):
-        query = query[0:-1]
-        select_index = query.find("SELECT")
-        from_index = query.find("FROM")
-        where_index = query.find("WHERE")
-
-        table_list = get_table_list(query[from_index:where_index])
-        if(table_list is None):
-            print("Invalid. Parsing <table_list> failed")
-        else:
-            attribute_list = get_attribute_list(query[select_index:from_index])
-            if(attribute_list is None):
-                print("Invalid. Parsing <attribute_list> failed")
-            else:
-                condition_tree = get_condition_tree(query[where_index:])
-                if(condition_tree is None):
-                    print("Invalid Parsing <condition> failed")
-    else:  # missing ; at the end of the query
+    if(query[-1] != ";"):  # missing ; at the end of the query
         print("Invalid Parsing <condition> failed")
+        return
 
-    print("parser returns: ")
-    print(table_list, attribute_list, condition_tree)
-    return (table_list, attribute_list, condition_tree)
+    query = query[0:-1]
+    select_index = query.find("SELECT")
+    from_index = query.find("FROM")
+    where_index = query.find("WHERE")
+
+    table_list = get_table_list(query[from_index:where_index])
+    if(table_list is None):
+        print("Invalid. Parsing <table_list> failed")
+        return
+
+    attribute_list = get_attribute_list(query[select_index:from_index])
+    if(attribute_list is None):
+        print("Invalid. Parsing <attribute_list> failed")
+        return
+
+    condition_tree = get_condition_tree(query[where_index:])
+    if(condition_tree is None):
+        print("Invalid Parsing <condition> failed")
+        return
+
+    return(table_list, attribute_list, condition_tree)
 
 
 def main():
