@@ -1,18 +1,3 @@
-class CondTreeNode:
-    data = None
-    left = None
-    right = None
-
-    def to_string(self):
-        result = ""
-        if self.left:
-            result += self.left.to_string()
-        if self.data:
-            result += self.data
-        if self.right:
-            result += self.right.to_string()
-        return result
-
 
 def convert_algebric_expression(i_table_list, i_attribute_list, i_condition_tree):
     #my_string = ','.join(my_list)
