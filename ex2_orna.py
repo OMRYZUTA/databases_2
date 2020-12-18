@@ -146,8 +146,9 @@ def main():
         table_list, attribute_list, condition_tree)
     print("initial algebric expression")
     print(alg_expr)
+
     alg_expr.apply_rule("5a")
-    # apply_rule_4(alg_expr)
+    print("after rule 5a")
     print(alg_expr)
 
 

@@ -149,13 +149,13 @@ def get_valid_condition(i_condition):
         or_index = condition.find("OR")
 
         while((not checked_all_options) and (new_node is None)):
-            if(and_index != -1):
-                # check_both_sides_of_operator function includes the recursive call to get_valid_condition
-                (and_index, new_node, checked_all_options) = check_both_sides_of_operator(
-                    condition, "AND", and_index, new_node, checked_all_options)
-            elif(or_index != -1):
+            if(or_index != -1):
                 (or_index, new_node, checked_all_options) = check_both_sides_of_operator(
                     condition, "OR", or_index, new_node, checked_all_options)
+            elif(and_index != -1):
+                # check_both_sides_of_operator function includes the recursive call to get_valid_condition
+                (and_index, new_node, checked_all_options) = check_both_sides_of_operator(
+                    condition, "AND", and_index, new_node, checked_all_options)            
             else:  # both indexes not found
                 checked_all_options = True
                 if (new_node is None):
