@@ -10,7 +10,7 @@ optimization_rules["4"] = "SIGMA[p1 AND p2](R)=SIGMA[p1](SIGMA[p2](R))"
 optimization_rules["4a"] = "SIGMA[p1](SIGMA[p2](R))=SIGMA[p2](SIGMA[p1](R))"
 optimization_rules["5a"] = "PI[X](SIGMA[p](R))=SIGMA[p](PI[X](R))"
 optimization_rules["6"] = "SIGMA[p](NJOIN(R,S))=NJOIN(SIGMA[p](R),S)"
-optimization_rules["11b"] = "SIGMA[p](CARTSIAN(R,S))=TJOIN[p](R,S)"
+optimization_rules["11b"] = "SIGMA[p](CARTSIAN(R,S))=NJOIN[p](R,S)"
 
 
 class Algebric_Expression:
@@ -61,10 +61,10 @@ def question_1():
     alg_expr = build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
     
-    print("initial algebric expression")
+    print("initial algebric expression:")
     print(alg_expr)    
     alg_expr.apply_rule(optimization_rule)
-    print("after rule {optimization_rule}")
+    print(f"after rule {optimization_rule}: {optimization_rules[optimization_rule]}")
     print(alg_expr)
 
 def show_main_menu():

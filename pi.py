@@ -7,7 +7,7 @@ class PI:
         self.applies_to = applies_to
 
     def __str__(self):
-        att_list_str = " ".join(self.attribute_list)
+        att_list_str = ",".join(self.attribute_list)
         string = "PI["+att_list_str+"]"
         string += "("+self.applies_to+")"
 

@@ -35,3 +35,32 @@ class cond_tree_node:
                 return []
 
         return self.left.get_all_atts_in_cond() + self.right.get_all_atts_in_cond()
+
+
+    def get_attribute_table(self):
+        """receives an attribute-node and returns R or S"""        
+        result = None        
+        if(self.node_type == "ATTRIBUTE"):
+            result = (self.data[0])    
+        
+        return result
+
+        
+    def get_attribute_alone(self):
+        """receives an attribute-node and returns atribute alone"""        
+        result = None        
+        if(self.node_type == "ATTRIBUTE"):
+            result = (self.data[2])    
+        
+        return result
+
+
+    def are_different_tables(self):
+        table1 = self.left.get_attribute_table()
+        table2 = self.right.get_attribute_table()
+        return (table1 != table2)
+
+    def are_same_attributes(self):
+        att1 = self.left.get_attribute_alone()
+        att2 = self.right.get_attribute_alone()
+        return (att1==att2)    
