@@ -51,18 +51,21 @@ def get_optimization_rule():
 
 def question_1():
     query_str = input("Enter your query: ")
+    optimization_rule = get_optimization_rule()
+
     parsed_query = ex2_parser.parse_query(query_str)
     if (not parsed_query):
         return
     (table_list, attribute_list, condition_tree) = parsed_query
+    
     alg_expr = build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
+    
     print("initial algebric expression")
-    print(alg_expr)
-    optimization_rule = get_optimization_rule()
+    print(alg_expr)    
     alg_expr.apply_rule(optimization_rule)
     print("after rule {optimization_rule}")
-    
+    print(alg_expr)
 
 def show_main_menu():
     message = """
@@ -84,16 +87,6 @@ def show_main_menu():
 def main():
     show_main_menu()
     
-    
-
-    alg_expr.apply_rule("4")
-    print("after rule 4")
-    print(alg_expr)
-    alg_expr.apply_rule("4a")
-    print("after rule 4a")
-    print(alg_expr)
-
-
 
 if __name__ == "__main__":
     main()
