@@ -5,12 +5,14 @@ from pi import PI
 from cartesian import CARTESIAN
 from njoin import NJOIN
 
-optimization_rules = {}
-optimization_rules["4"] = "SIGMA[p1 AND p2](R)=SIGMA[p1](SIGMA[p2](R))"
-optimization_rules["4a"] = "SIGMA[p1](SIGMA[p2](R))=SIGMA[p2](SIGMA[p1](R))"
-optimization_rules["5a"] = "PI[X](SIGMA[p](R))=SIGMA[p](PI[X](R))"
-optimization_rules["6"] = "SIGMA[p](NJOIN(R,S))=NJOIN(SIGMA[p](R),S)"
-optimization_rules["11b"] = "SIGMA[p](CARTSIAN(R,S))=NJOIN[p](R,S)"
+optimization_rules = {
+    "4": "SIGMA[p1 AND p2](T)=SIGMA[p1](SIGMA[p2](T))",
+    "4a": "SIGMA[p1](SIGMA[p2](T))=SIGMA[p2](SIGMA[p1](T))",
+    "5a": "PI[x](SIGMA[p](T))=SIGMA[p](PI[x](T))",
+    "6": "SIGMA[p](NJOIN(T1,T2))=NJOIN(SIGMA[p](T1),T2)",
+    "6a": "SIGMA[q](NJOIN(T1,T2))=NJOIN(T1,SIGMA[q](T2))",
+    "11b": "SIGMA[p](CARTESIAN(T1,T2))=NJOIN(T1,T2)"
+}
 
 
 class Algebric_Expression:
@@ -35,37 +37,37 @@ def build_initial_algebric_expression(table_list, attribute_list, condition_tree
     sigma = SIGMA(condition_tree, cartesian)
     pi = PI(attribute_list, sigma)
     return Algebric_Expression(pi)
-   
+
+
 def get_optimization_rule():
-    message = """
-    please choose from the followoing optimization rules:
-    4
-    4a
-    5a
-    6
-    11b
-    """
+    message = "please choose from the followoing optimization rules:\n"
+    for key, value in optimization_rules.items():
+        message += key + ":\t" + value + "\n"
+
     optimization_rule = input(message)
     return optimization_rule
-    
+
 
 def question_1():
-    query_str = input("Enter your query: ")
+    # input("Enter your query: ")
+    query_str = "SELECT R.A,R.B FROM R,S WHERE R.E=S.E AND R.D=S.D ;"
     optimization_rule = get_optimization_rule()
 
     parsed_query = ex2_parser.parse_query(query_str)
     if (not parsed_query):
         return
     (table_list, attribute_list, condition_tree) = parsed_query
-    
+
     alg_expr = build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
-    
+
     print("initial algebric expression:")
-    print(alg_expr)    
-    alg_expr.apply_rule(optimization_rule)
-    print(f"after rule {optimization_rule}: {optimization_rules[optimization_rule]}")
     print(alg_expr)
+    alg_expr.apply_rule(optimization_rule)
+    print(
+        f"after rule {optimization_rule}: {optimization_rules[optimization_rule]}")
+    print(alg_expr)
+
 
 def show_main_menu():
     message = """
@@ -83,10 +85,9 @@ def show_main_menu():
     #     question_3()
 
 
-
 def main():
     show_main_menu()
-    
+
 
 if __name__ == "__main__":
     main()
