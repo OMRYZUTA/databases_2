@@ -20,3 +20,6 @@ class CARTESIAN:
 
     def get_type(self):
         return "CARTESIAN"
+
+    def apply_rule(self, rule_type):
+        return self

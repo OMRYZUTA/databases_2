@@ -20,4 +20,3 @@ class NJOIN:
 
     def get_type(self):
         return "NJOIN"
-

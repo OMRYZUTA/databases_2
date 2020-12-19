@@ -50,7 +50,7 @@ def get_optimization_rule():
 
 def question_1():
     # input("Enter your query: ")
-    query_str = "SELECT R.A,R.B FROM R,S WHERE R.E=S.E AND R.D=S.D ;"
+    query_str = "SELECT R.A,R.B FROM R,S WHERE R.A=5 AND R.B>10;"
     optimization_rule = get_optimization_rule()
 
     parsed_query = ex2_parser.parse_query(query_str)

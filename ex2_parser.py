@@ -1,9 +1,8 @@
 from conditionTree import cond_tree_node
 
-valid_attributes = [
-    'R.A', 'R.B', 'R.C', 'R.D', 'R.E',
-    'S.D', 'S.E', 'S.F', 'S.H', 'S.I']
-
+R_attributes = ['R.A', 'R.B', 'R.C', 'R.D', 'R.E']
+S_attributes = ['S.D', 'S.E', 'S.F', 'S.H', 'S.I']
+valid_attributes = R_attributes+S_attributes
 
 def get_valid_table(i_table):
     result = None
