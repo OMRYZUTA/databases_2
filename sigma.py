@@ -51,23 +51,28 @@ class SIGMA:
 
 
     def apply_rule(self, rule_type):
-        result = self
-        if (rule_type == "5a"):
-            self.applies_to.apply_rule(rule_type)
-        elif(rule_type == "4"):
+        if(rule_type == "4"):
             if (self.condition.data == "AND"):
                 self.applies_to = SIGMA(self.condition.right, self.applies_to)
                 self.condition = self.condition.left
+        
         elif(rule_type == "4a"):
             if(self.applies_to.get_type()=="SIGMA"):
                 temp_condition_tree=self.applies_to.condition
                 self.applies_to.condition= self.condition
                 self.condition= temp_condition_tree
+        elif (rule_type == "5a"):
+            self.applies_to.apply_rule(rule_type)
+        elif(rule_type == "6"):
+            pass
+        elif(rule_type == "6a"):
+            pass
         elif(rule_type == "11b"):
             if(self.applies_to.get_type()=="CARTESIAN"):
                 cartesian = self.applies_to
-                if(is_NJOIN_condition(self.condition)):
+                if(self.is_NJOIN_condition()):
                     #"SIGMA[p](CARTSIAN(R,S))=NJOIN[p](R,S)"
-                    result = NJOIN(cartesian.scheme1, cartesian.scheme2) 
-
-        return result
+                    self = NJOIN(cartesian.scheme1, cartesian.scheme2)
+            elif (self.applies_to.get_type() == "SIGMA"):
+                self.applies_to = self.applies_to.apply_rule(rule_type) 
+        return self

@@ -20,15 +20,21 @@ class PI:
         return other + str(self)
 
     def apply_rule(self, rule_type):
-        if (rule_type == "5a"):
+        if(rule_type == "4" or rule_type == "4a" ):
+            self.applies_to.apply_rule(rule_type)
+        elif (rule_type == "5a"):
             if (self.applies_to.get_type() == "SIGMA"):
                 sigma = self.applies_to
                 if (sigma.check_all_attributes_from(self.attribute_list)):
                     self.applies_to = sigma.applies_to
                     sigma.applies_to = self
                     return sigma
-        elif(rule_type == "4" or rule_type == "4a"):
-            self.applies_to.apply_rule(rule_type)
+        elif(rule_type == "6" or rule_type == "6a"):
+            pass
+        elif( rule_type == "11b"):
+            if (self.applies_to.get_type() == "SIGMA"):
+                self.applies_to = self.applies_to.apply_rule(rule_type)
+        
         return self
 
     def get_type(self):
