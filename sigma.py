@@ -1,6 +1,7 @@
 from ex2_parser import R_attributes, S_attributes
 from njoin import NJOIN
 from conditionTree import cond_tree_node
+import tables  
 
 
 class SIGMA:
@@ -112,3 +113,41 @@ class SIGMA:
         # the default case
         self.applies_to = self.applies_to.apply_rule(rule_type)
         return self
+
+
+    def estimate_size(self):        
+        num_of_rows=None
+        size_of_row=None
+
+        if(self.condition.node_type!="LOGIC_OP"):   #meaning it's a simple condition
+            attribute_node=None
+             # assumiing there's only one att per simple condition here
+            if(self.condition.left.node_type=="ATTRIBUTE"):
+                attribute_node =self.condition.left
+            elif(self.condition.right.node_type=="ATTRIBUTE"):
+                attribute_node =self.condition.right
+            
+            table = attribute_node.get_attribute_table()
+            attribute = attribute_node.get_attribute_alone()                        
+            table_num_of_rows = tables.Table_R.n_R if (table == 'R') else tables.Table_S.n_S
+            range_of_attribute = 
+            num_of_rows = 
+
+        (num_of_rows_1,size_of_row_1)=tables.get_table_size(self.scheme1)
+        (num_of_rows_2,size_of_row_2)=tables.get_table_size(self.scheme2)
+
+        if(num_of_rows_1==None and size_of_row_1==None):
+            (num_of_rows_1,size_of_row_1)=self.scheme1.estimate_size()
+        if(num_of_rows_2==None and size_of_row_2==None):
+            (num_of_rows_2,size_of_row_2)=self.scheme2.estimate_size()
+        
+        num_of_rows=num_of_rows_1*num_of_rows_2
+        size_of_row=size_of_row_1+size_of_row_2
+        
+        msg=f"""
+        CARTESIAN        
+        input: n_scheme1={num_of_rows_1} n_scheme2={num_of_rows_2} R_scheme1={size_of_row_1} R_scheme2={size_of_row_2}
+        output: n_new_scheme={num_of_rows} R_new_scheme={size_of_row}
+        """
+        print(msg)
+        return (num_of_rows,size_of_row)

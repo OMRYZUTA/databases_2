@@ -65,9 +65,8 @@ def randomly_apply_10_rules(i_alg_expr):
         apply_and_show_rule(i_alg_expr,rule)
         print("")
 
-def estimate_size_rec(i_alg_expr):
-    if(i_alg_expr.aplie_to ==None):
-        
+# def estimate_size_rec(i_alg_expr):
+#     if(i_alg_expr.aplie_to ==None):       
 
 
 def question_2():
@@ -92,7 +91,7 @@ def question_1():
 
 def question_3():
     alg_expressions = question_2()
-    final_operator = estimate_size_rec(alg_expressions[0])
+    #final_operator = estimate_size_rec(alg_expressions[0])
 
 
 def show_main_menu():

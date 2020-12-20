@@ -1,3 +1,7 @@
 from ex2_solution import optimization_rules
-import random
-print()
+from cartesian import CARTESIAN
+
+expr=CARTESIAN("R","S")
+print(CARTESIAN)
+(n,r)=expr.estimate_size()
+print(n,r)
