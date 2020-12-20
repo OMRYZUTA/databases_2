@@ -115,31 +115,19 @@ class SIGMA:
         return self
 # assumiing there's only one att per simple condition here
 
-    def estimate_simple_condition_rows(self, i_before_num_of_rows):
-        attribute_node = None
-
-        if(self.condition.left.node_type == "ATTRIBUTE"):
-            attribute_node = self.condition.left
-        elif(self.condition.right.node_type == "ATTRIBUTE"):
-            attribute_node = self.condition.right
-        attribute = attribute_node.get_attribute_alone()
-        table = attribute_node.get_attribute_table()
-        range_of_attribute = tables.get_range_of_values(table, attribute)
-        return int(i_before_num_of_rows / range_of_attribute)
+    
 
     def estimate_size(self):
         before_num_of_rows = None
         after_num_of_rows = None
         size_of_row = None
+
         (before_num_of_rows, size_of_row) = tables.get_table_size(self.applies_to)
         if(before_num_of_rows == None and size_of_row == None):
             (before_num_of_rows, size_of_row) = self.applies_to.estimate_size()
+        
+        after_num_of_rows = estimate_condition_rec(self.condition, before_num_of_rows)
 
-        if(self.condition.data == "="):  # meaning it's a simple condition
-            after_num_of_rows = self.estimate_simple_condition_rows(
-                before_num_of_rows)
-        else:
-            pass
 
         msg = f"""
         SIGMA        
@@ -148,3 +136,31 @@ class SIGMA:
         """
         print(msg)
         return (after_num_of_rows, size_of_row)
+
+def estimate_simple_condition_rows(i_condition, i_before_num_of_rows):
+        attribute_node = None
+
+        if(i_condition.left.node_type == "ATTRIBUTE"):
+            attribute_node = i_condition.left
+        elif(i_condition.right.node_type == "ATTRIBUTE"):
+            attribute_node = i_condition.right
+        attribute = attribute_node.get_attribute_alone()
+        table = attribute_node.get_attribute_table()
+        range_of_attribute = tables.get_range_of_values(table, attribute)
+        return int(i_before_num_of_rows / range_of_attribute)
+
+def estimate_condition_rec(i_condition, i_before_num_of_rows):
+    after_num_of_rows = None
+    if(i_condition.data == "="):  # meaning it's a simple condition
+            after_num_of_rows = estimate_simple_condition_rows(i_condition, i_before_num_of_rows)
+    elif(i_condition.data =="AND"):
+        left_num_of_rows = estimate_condition_rec(i_condition.left, i_before_num_of_rows)
+        right_num_of_rows = estimate_condition_rec(i_condition.right, i_before_num_of_rows)
+        after_num_of_rows= (left_num_of_rows*right_num_of_rows) / i_before_num_of_rows
+    elif(i_condition.data =="OR"):
+        left_num_of_rows = estimate_condition_rec(i_condition.left, i_before_num_of_rows)
+        right_num_of_rows = estimate_condition_rec(i_condition.right, i_before_num_of_rows)
+        after_num_of_rows= left_num_of_rows + right_num_of_rows 
+    
+    return int(after_num_of_rows)
+
