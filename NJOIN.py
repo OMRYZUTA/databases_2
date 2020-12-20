@@ -20,3 +20,6 @@ class NJOIN:
 
     def get_type(self):
         return "NJOIN"
+
+    def apply_rule(self, rule_type):
+        return self

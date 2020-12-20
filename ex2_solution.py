@@ -1,9 +1,11 @@
-# Orna's sketch idea
+import random
 import ex2_parser
 from sigma import SIGMA
 from pi import PI
 from cartesian import CARTESIAN
 from njoin import NJOIN
+import copy
+from algebric_expression import Algebric_Expression
 
 optimization_rules = {
     "4": "SIGMA[p1 AND p2](T)=SIGMA[p1](SIGMA[p2](T))",
@@ -15,17 +17,6 @@ optimization_rules = {
 }
 
 
-class Algebric_Expression:
-    root = None
-
-    def __init__(self, root):
-        self.root = root
-
-    def __str__(self):
-        return str(self.root)
-
-    def apply_rule(self, rule_type):
-        self.root = self.root.apply_rule(rule_type)
 
 
 def build_initial_algebric_expression(table_list, attribute_list, condition_tree):
@@ -58,8 +49,8 @@ def get_initial_algebric_expression():
         table_list, attribute_list, condition_tree)
     return alg_expr
 
-    
-def show_apply_rule(i_alg_expr, i_rule):
+
+def apply_and_show_rule(i_alg_expr, i_rule):
     print("before:", end="")
     print(i_alg_expr)
     i_alg_expr.apply_rule(i_rule)
@@ -67,17 +58,35 @@ def show_apply_rule(i_alg_expr, i_rule):
         f"after rule {i_rule}: {optimization_rules[i_rule]}")
     print(i_alg_expr)
 
+def randomly_apply_10_rules(i_alg_expr):
+    for num in range(10):
+        print(f"iteration number: {num}")
+        rule =random.choice(list(optimization_rules.keys()))
+        apply_and_show_rule(i_alg_expr,rule)
+        print("")
 
 def question_2():
-    alg_expr = get_initial_algebric_expression()
+    alg_expr1 = get_initial_algebric_expression()
+    alg_expr2 =copy.deepcopy(alg_expr1)
+    alg_expr3 =copy.deepcopy(alg_expr1)
+    alg_expr4 =copy.deepcopy(alg_expr1)
+    alg_expressions =[alg_expr1, alg_expr2, alg_expr3, alg_expr4]
+    for alg_expr in alg_expressions:
+        randomly_apply_10_rules(alg_expr)
 
+    print("the 4 resulting alg exp:")
+    for alg_expr in alg_expressions:
+        print(f"\n - {alg_expr}")
+    return alg_expressions
 
+    
 def question_1():
     alg_expr = get_initial_algebric_expression()
     optimization_rule = get_optimization_rule()
-    show_apply_rule(alg_expr, optimization_rule)
+    apply_and_show_rule(alg_expr, optimization_rule)
 
-    
+def question_3():
+    pass    
 
 def show_main_menu():
     message = """
@@ -91,8 +100,8 @@ def show_main_menu():
         question_1()
     elif choice == "2":
         question_2()
-    # elif choice == "3":
-    #     question_3()
+     elif choice == "3":
+         question_3()
 
 
 def main():

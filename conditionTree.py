@@ -15,7 +15,7 @@ class cond_tree_node:
         if self.left:
             result += "(" + self.left.__str__()
         if self.data:
-            result += " " + self.data + " "
+            result += "" + self.data + ""
         if self.right:
             result += self.right.__str__() + ")"
 
