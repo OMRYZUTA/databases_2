@@ -65,6 +65,11 @@ def randomly_apply_10_rules(i_alg_expr):
         apply_and_show_rule(i_alg_expr,rule)
         print("")
 
+def estimate_size_rec(i_alg_expr):
+    if(i_alg_expr.aplie_to ==None):
+        
+
+
 def question_2():
     alg_expr1 = get_initial_algebric_expression()
     alg_expr2 =copy.deepcopy(alg_expr1)
@@ -86,7 +91,9 @@ def question_1():
     apply_and_show_rule(alg_expr, optimization_rule)
 
 def question_3():
-    pass    
+    alg_expressions = question_2()
+    final_operator = estimate_size_rec(alg_expressions[0])
+
 
 def show_main_menu():
     message = """
@@ -100,7 +107,7 @@ def show_main_menu():
         question_1()
     elif choice == "2":
         question_2()
-     elif choice == "3":
+    elif choice == "3":
          question_3()
 
 

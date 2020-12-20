@@ -1,6 +1,7 @@
 class NJOIN:
     scheme1 = None
     scheme2 = None
+    applies_to = None
 
     def __init__(self, scheme1, scheme2):
         self.scheme1 = scheme1
