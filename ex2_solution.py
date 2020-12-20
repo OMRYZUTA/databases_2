@@ -17,8 +17,6 @@ optimization_rules = {
 }
 
 
-
-
 def build_initial_algebric_expression(table_list, attribute_list, condition_tree):
 
     cartesian = CARTESIAN(table_list[0], table_list[0])
@@ -38,8 +36,9 @@ def get_optimization_rule():
     optimization_rule = input(message)
     return optimization_rule
 
+
 def get_initial_algebric_expression():
-    query_str =  input("Enter your query: ")
+    query_str = input("Enter your query: ")
     parsed_query = ex2_parser.parse_query(query_str)
     if (not parsed_query):
         return
@@ -58,23 +57,24 @@ def apply_and_show_rule(i_alg_expr, i_rule):
         f"after rule {i_rule}: {optimization_rules[i_rule]}")
     print(i_alg_expr)
 
+
 def randomly_apply_10_rules(i_alg_expr):
     for num in range(10):
         print(f"iteration number: {num}")
-        rule =random.choice(list(optimization_rules.keys()))
-        apply_and_show_rule(i_alg_expr,rule)
+        rule = random.choice(list(optimization_rules.keys()))
+        apply_and_show_rule(i_alg_expr, rule)
         print("")
 
 # def estimate_size_rec(i_alg_expr):
-#     if(i_alg_expr.aplie_to ==None):       
+#     if(i_alg_expr.aplie_to ==None):
 
 
 def question_2():
     alg_expr1 = get_initial_algebric_expression()
-    alg_expr2 =copy.deepcopy(alg_expr1)
-    alg_expr3 =copy.deepcopy(alg_expr1)
-    alg_expr4 =copy.deepcopy(alg_expr1)
-    alg_expressions =[alg_expr1, alg_expr2, alg_expr3, alg_expr4]
+    alg_expr2 = copy.deepcopy(alg_expr1)
+    alg_expr3 = copy.deepcopy(alg_expr1)
+    alg_expr4 = copy.deepcopy(alg_expr1)
+    alg_expressions = [alg_expr1, alg_expr2, alg_expr3, alg_expr4]
     for alg_expr in alg_expressions:
         randomly_apply_10_rules(alg_expr)
 
@@ -83,11 +83,12 @@ def question_2():
         print(f"\n - {alg_expr}")
     return alg_expressions
 
-    
+
 def question_1():
     alg_expr = get_initial_algebric_expression()
     optimization_rule = get_optimization_rule()
     apply_and_show_rule(alg_expr, optimization_rule)
+
 
 def question_3():
     alg_expressions = question_2()
@@ -107,7 +108,7 @@ def show_main_menu():
     elif choice == "2":
         question_2()
     elif choice == "3":
-         question_3()
+        question_3()
 
 
 def main():

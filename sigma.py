@@ -1,7 +1,7 @@
 from ex2_parser import R_attributes, S_attributes
 from njoin import NJOIN
 from conditionTree import cond_tree_node
-import tables  
+import tables
 
 
 class SIGMA:
@@ -53,31 +53,31 @@ class SIGMA:
         return False
 
     def matches_6(self):
-        att_list=None
+        att_list = None
 
-        if(self.applies_to.get_type()=="NJOIN"):
+        if(self.applies_to.get_type() == "NJOIN"):
             njoin = self.applies_to
-            if(njoin.scheme1=='R'):
+            if(njoin.scheme1 == 'R'):
                 att_list = R_attributes
-            elif(njoin.scheme1=='S'):
-                att_list = S_attributes    
-        
+            elif(njoin.scheme1 == 'S'):
+                att_list = S_attributes
+
             return self.check_all_attributes_from(att_list)
-        
+
         return False
-    
-    def matches_6a(self):
-        att_list=None
 
-        if(self.applies_to.get_type()=="NJOIN"):
+    def matches_6a(self):
+        att_list = None
+
+        if(self.applies_to.get_type() == "NJOIN"):
             njoin = self.applies_to
-            if(njoin.scheme2=='R'):
+            if(njoin.scheme2 == 'R'):
                 att_list = R_attributes
-            elif(njoin.scheme2=='S'):
-                att_list = S_attributes    
-        
+            elif(njoin.scheme2 == 'S'):
+                att_list = S_attributes
+
             return self.check_all_attributes_from(att_list)
-        
+
         return False
 
     def apply_rule(self, rule_type):
@@ -113,41 +113,38 @@ class SIGMA:
         # the default case
         self.applies_to = self.applies_to.apply_rule(rule_type)
         return self
+# assumiing there's only one att per simple condition here
 
+    def estimate_simple_condition_rows(self, i_before_num_of_rows):
+        attribute_node = None
 
-    def estimate_size(self):        
-        num_of_rows=None
-        size_of_row=None
+        if(self.condition.left.node_type == "ATTRIBUTE"):
+            attribute_node = self.condition.left
+        elif(self.condition.right.node_type == "ATTRIBUTE"):
+            attribute_node = self.condition.right
+        attribute = attribute_node.get_attribute_alone()
+        table = attribute_node.get_attribute_table()
+        range_of_attribute = tables.get_range_of_values(table, attribute)
+        return int(i_before_num_of_rows / range_of_attribute)
 
-        if(self.condition.node_type!="LOGIC_OP"):   #meaning it's a simple condition
-            attribute_node=None
-             # assumiing there's only one att per simple condition here
-            if(self.condition.left.node_type=="ATTRIBUTE"):
-                attribute_node =self.condition.left
-            elif(self.condition.right.node_type=="ATTRIBUTE"):
-                attribute_node =self.condition.right
-            
-            table = attribute_node.get_attribute_table()
-            attribute = attribute_node.get_attribute_alone()                        
-            table_num_of_rows = tables.Table_R.n_R if (table == 'R') else tables.Table_S.n_S
-            range_of_attribute = 
-            num_of_rows = 
+    def estimate_size(self):
+        before_num_of_rows = None
+        after_num_of_rows = None
+        size_of_row = None
+        (before_num_of_rows, size_of_row) = tables.get_table_size(self.applies_to)
+        if(before_num_of_rows == None and size_of_row == None):
+            (before_num_of_rows, size_of_row) = self.applies_to.estimate_size()
 
-        (num_of_rows_1,size_of_row_1)=tables.get_table_size(self.scheme1)
-        (num_of_rows_2,size_of_row_2)=tables.get_table_size(self.scheme2)
+        if(self.condition.data == "="):  # meaning it's a simple condition
+            after_num_of_rows = self.estimate_simple_condition_rows(
+                before_num_of_rows)
+        else:
+            pass
 
-        if(num_of_rows_1==None and size_of_row_1==None):
-            (num_of_rows_1,size_of_row_1)=self.scheme1.estimate_size()
-        if(num_of_rows_2==None and size_of_row_2==None):
-            (num_of_rows_2,size_of_row_2)=self.scheme2.estimate_size()
-        
-        num_of_rows=num_of_rows_1*num_of_rows_2
-        size_of_row=size_of_row_1+size_of_row_2
-        
-        msg=f"""
-        CARTESIAN        
-        input: n_scheme1={num_of_rows_1} n_scheme2={num_of_rows_2} R_scheme1={size_of_row_1} R_scheme2={size_of_row_2}
-        output: n_new_scheme={num_of_rows} R_new_scheme={size_of_row}
+        msg = f"""
+        SIGMA        
+        input: n_scheme1={before_num_of_rows}  R_scheme1={size_of_row} 
+        output: n_new_scheme={after_num_of_rows} R_new_scheme={size_of_row}
         """
         print(msg)
-        return (num_of_rows,size_of_row)
+        return (after_num_of_rows, size_of_row)
