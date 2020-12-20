@@ -47,12 +47,8 @@ def get_optimization_rule():
     optimization_rule = input(message)
     return optimization_rule
 
-
-def question_1():
-    # input("Enter your query: ")
-    query_str = "SELECT R.A,R.B FROM R,S WHERE R.A=5 AND R.B>10;"
-    optimization_rule = get_optimization_rule()
-
+def get_initial_algebric_expression():
+    query_str =  input("Enter your query: ")
     parsed_query = ex2_parser.parse_query(query_str)
     if (not parsed_query):
         return
@@ -60,14 +56,28 @@ def question_1():
 
     alg_expr = build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
+    return alg_expr
 
-    print("initial algebric expression:")
-    print(alg_expr)
-    alg_expr.apply_rule(optimization_rule)
+    
+def show_apply_rule(i_alg_expr, i_rule):
+    print("before:", end="")
+    print(i_alg_expr)
+    i_alg_expr.apply_rule(i_rule)
     print(
-        f"after rule {optimization_rule}: {optimization_rules[optimization_rule]}")
-    print(alg_expr)
+        f"after rule {i_rule}: {optimization_rules[i_rule]}")
+    print(i_alg_expr)
 
+
+def question_2():
+    alg_expr = get_initial_algebric_expression()
+
+
+def question_1():
+    alg_expr = get_initial_algebric_expression()
+    optimization_rule = get_optimization_rule()
+    show_apply_rule(alg_expr, optimization_rule)
+
+    
 
 def show_main_menu():
     message = """
@@ -79,8 +89,8 @@ def show_main_menu():
     choice = input(message)
     if choice == "1":
         question_1()
-    # elif choice == "2":
-    #     question_2()
+    elif choice == "2":
+        question_2()
     # elif choice == "3":
     #     question_3()
 
