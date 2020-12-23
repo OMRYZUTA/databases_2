@@ -6,6 +6,7 @@ from cartesian import CARTESIAN
 from njoin import NJOIN
 import copy
 from algebric_expression import Algebric_Expression
+import tables
 
 optimization_rules = {
     "4": "SIGMA[p1 AND p2](T)=SIGMA[p1](SIGMA[p2](T))",
@@ -112,6 +113,7 @@ def show_main_menu():
 
 
 def main():
+    tables.fill_tables('statistics.txt')
     show_main_menu()
 
 
