@@ -42,11 +42,27 @@ class TestTree(unittest.TestCase):
     def test_rule_6(self):
         self.alg_expr_rule6.apply_rule("6")
         self.assertEqual(self.alg_expr_rule6.__str__(),"NJOIN(SIGMA[(R.D>4)](R),S)")
+        self.alg_expr1.apply_rule("6")
+        self.assertEqual(self.alg_expr1.__str__(),"PI[R.A,R.B](CARTESIAN(SIGMA[((R.A=10)AND(R.B>R.A))](R),S))")
+        query_str= "SELECT R.A,R.B FROM R,S WHERE R.A=10 AND R.B>S.E ;"
+        parsed_query = ex2_solution.ex2_parser.parse_query(query_str)
+        (table_list, attribute_list, condition_tree) = parsed_query
+        self.alg_expr3 = ex2_solution.build_initial_algebric_expression(
+        table_list, attribute_list, condition_tree)
+        self.alg_expr3.apply_rule("6")
+        self.assertEqual(self.alg_expr3.__str__(),"PI[R.A,R.B](SIGMA[((R.A=10)AND(R.B>S.E))](CARTESIAN(R,S)))")
+        
 
     def test_rule_6a(self):
         self.alg_expr_rule6a.apply_rule("6a")
-        print(self.alg_expr_rule6a)
-        self.assertEqual(self.alg_expr_rule6a.__str__(),"NJOIN(R,SIGMA[(S.D>4)](S))")        
+        self.assertEqual(self.alg_expr_rule6a.__str__(),"NJOIN(R,SIGMA[(S.D>4)](S))")
+        query_str= "SELECT R.A,R.B FROM R,S WHERE S.E=10 AND S.D>S.F ;"
+        parsed_query = ex2_solution.ex2_parser.parse_query(query_str)
+        (table_list, attribute_list, condition_tree) = parsed_query
+        self.alg_expr4 = ex2_solution.build_initial_algebric_expression(
+        table_list, attribute_list, condition_tree)
+        self.alg_expr4.apply_rule("6a")
+        self.assertEqual(self.alg_expr4.__str__(),"PI[R.A,R.B](CARTESIAN(R,SIGMA[((S.E=10)AND(S.D>S.F))](S)))")        
 
 
 if __name__ == "__main__":
