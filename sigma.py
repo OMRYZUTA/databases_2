@@ -24,7 +24,7 @@ class SIGMA:
     def __radd__(self, other):
         return other + str(self)
 
-    def check_all_attributes_from(self, attribute_list):
+    def check_all_cond_attributes_from(self, attribute_list):
         result = True
         all_cond_attributes = self.condition.get_all_atts_in_cond()
         for att in all_cond_attributes:
@@ -55,23 +55,20 @@ class SIGMA:
     def matches_6(self):
         att_list = None
 
-        if(self.applies_to.get_type() == "NJOIN" or self.applies_to.get_type() == "CARTESIAN"):
-                att_list =self.applies_to.get_all_attributes_scheme1()
-                return self.check_all_attributes_from(att_list)
+        if(self.applies_to.get_type() == "NJOIN" or
+         self.applies_to.get_type() == "CARTESIAN"):
+                att_list =self.applies_to.get_all_attributes("scheme1")
+                return self.check_all_cond_attributes_from(att_list)
 
         return False
 
     def matches_6a(self):
         att_list = None
 
-        if(self.applies_to.get_type() == "NJOIN"):
-            njoin = self.applies_to
-            if(njoin.scheme2 == 'R'):
-                att_list = R_attributes
-            elif(njoin.scheme2 == 'S'):
-                att_list = S_attributes
-
-            return self.check_all_attributes_from(att_list)
+        if(self.applies_to.get_type() == "NJOIN" or
+         self.applies_to.get_type() == "CARTESIAN"):
+                att_list =self.applies_to.get_all_attributes("scheme2")
+                return self.check_all_cond_attributes_from(att_list)
 
         return False
 
@@ -108,11 +105,11 @@ class SIGMA:
         # the default case
         self.applies_to = self.applies_to.apply_rule(rule_type)
         return self
-# assumiing there's only one att per simple condition here
 
     
 
     def estimate_size(self):
+
         before_num_of_rows = None
         after_num_of_rows = None
         size_of_row = None
@@ -131,6 +128,18 @@ class SIGMA:
         """
         print(msg)
         return (after_num_of_rows, size_of_row)
+
+    def get_all_attributes(self, i_scheme=None):
+        att_list = None
+
+        if(self.applies_to == 'R'):
+                att_list = R_attributes
+        elif(self.applies_to == 'S'):
+                att_list = S_attributes
+        else:        
+            att_list= self.applies_to.get_all_attributes()
+
+        return  att_list
 
 def estimate_simple_condition_rows(i_condition, i_before_num_of_rows):
         attribute_node = None

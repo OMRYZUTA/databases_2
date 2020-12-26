@@ -25,7 +25,7 @@ class PI:
     def matches_5a(self):
         if (self.applies_to.get_type() == "SIGMA"):
             sigma = self.applies_to
-            return (sigma.check_all_attributes_from(self.attribute_list))
+            return (sigma.check_all_cond_attributes_from(self.attribute_list))
 
         return False
 

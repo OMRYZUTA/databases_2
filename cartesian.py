@@ -52,13 +52,26 @@ class CARTESIAN:
         print(msg)
         return (num_of_rows, size_of_row)
 
-    def get_all_attributes(self, i_scheme):
-        if(i_scheme == None):
-            att_list =self.get_all_attributes("scheme1") +self.get_all_attributes("scheme2")
-        if(self.scheme1 == 'R'):
-            att_list = R_attributes
-        elif(self.scheme1 == 'S'):
-            att_list = S_attributes
+
+    def get_all_attributes_from_scheme(self, i_scheme):
+        if(i_scheme == 'R'):
+                att_list = R_attributes
+        elif(i_scheme == 'S'):
+                att_list = S_attributes
         else:
-            att_list = self.scheme1.get_all_attributes()
+            att_list = i_scheme.get_all_attributes()
+
+        return att_list
+            
+
+    def get_all_attributes(self, i_scheme=None):
+        att_list = None
+        
+        if(i_scheme == None):
+            att_list =self.get_all_attributes_from_scheme(self.scheme1)+self.get_all_attributes_from_scheme(self.scheme2)
+        elif(i_scheme == "scheme1"):
+            att_list = self.get_all_attributes_from_scheme(self.scheme1)
+        elif(i_scheme == "scheme2"):
+            att_list = self.get_all_attributes_from_scheme(self.scheme2)      
+           
         return att_list
