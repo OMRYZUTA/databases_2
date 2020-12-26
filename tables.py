@@ -38,7 +38,7 @@ vS["I"] = 0
 Table_R = {
     "num_of_atts": 5,
     "att_size": 4,
-    "n_R=": 0
+    "n_R": 0
 }
 
 vR = {}

@@ -4,6 +4,9 @@ import ex2_solution
 import njoin
 import sigma
 from algebric_expression import Algebric_Expression
+from cartesian import CARTESIAN
+import tables
+from pi import PI
 
 class TestTree(unittest.TestCase):
 
@@ -62,8 +65,22 @@ class TestTree(unittest.TestCase):
         self.alg_expr4 = ex2_solution.build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
         self.alg_expr4.apply_rule("6a")
-        self.assertEqual(self.alg_expr4.__str__(),"PI[R.A,R.B](CARTESIAN(R,SIGMA[((S.E=10)AND(S.D>S.F))](S)))")        
+        self.assertEqual(self.alg_expr4.__str__(),"PI[R.A,R.B](CARTESIAN(R,SIGMA[((S.E=10)AND(S.D>S.F))](S)))")      
+          
+    def test_cartesian_estimation(self):
+        tables.fill_tables('statistics.txt')
+        carti = CARTESIAN("R","S")
+        (num_of_rows, size_of_row) = carti.estimate_size()
+        self.assertEqual(num_of_rows, 20000)
+        self.assertEqual(size_of_row, 40)
 
+    def test_PI_estimation(self):
+        tables.fill_tables('statistics.txt')
+        carti = CARTESIAN("R","S")
+        pipi=(PI(["R.A","R.B"],carti))
+        (num_of_rows, size_of_row) =pipi.estimate_size()
+        # self.assertEqual(num_of_rows, 20000)
+        # self.assertEqual(size_of_row, 8)
 
 if __name__ == "__main__":
     unittest.main()

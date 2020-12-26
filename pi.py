@@ -1,3 +1,7 @@
+from ex2_parser import R_attributes, S_attributes
+import tables
+
+
 class PI:
     attribute_list = None
     applies_to = None
@@ -40,3 +44,24 @@ class PI:
         # the default case
         self.applies_to = self.applies_to.apply_rule(rule_type)
         return self
+    
+    def estimate_size(self):
+        num_of_rows = None
+        
+        before_size_of_row = None
+        after_size_of_row = None
+
+        (num_of_rows, before_size_of_row) = tables.get_table_size(self.applies_to)
+        if(num_of_rows == None and before_size_of_row == None):
+            (num_of_rows, before_size_of_row) = self.applies_to.estimate_size()
+        
+        after_size_of_row = len(self.attribute_list) *4
+
+
+        msg = f"""
+        PI        
+        input: n_scheme1={num_of_rows}  R_scheme1={before_size_of_row} 
+        output: n_new_scheme={num_of_rows} R_new_scheme={after_size_of_row}
+        """
+        print(msg)
+        return (num_of_rows, after_size_of_row)
