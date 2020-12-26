@@ -55,14 +55,9 @@ class SIGMA:
     def matches_6(self):
         att_list = None
 
-        if(self.applies_to.get_type() == "NJOIN"):
-            njoin = self.applies_to
-            if(njoin.scheme1 == 'R'):
-                att_list = R_attributes
-            elif(njoin.scheme1 == 'S'):
-                att_list = S_attributes
-
-            return self.check_all_attributes_from(att_list)
+        if(self.applies_to.get_type() == "NJOIN" or self.applies_to.get_type() == "CARTESIAN"):
+                att_list =self.applies_to.get_all_attributes_scheme1()
+                return self.check_all_attributes_from(att_list)
 
         return False
 
