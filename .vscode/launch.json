@@ -12,20 +12,6 @@
       "console": "integratedTerminal"
     },
     {
-      "name": "trial",
-      "type": "python",
-      "request": "launch",
-      "program": "trial.py",
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "test",
-      "type": "python",
-      "request": "launch",
-      "program": "test_orna.py",
-      "console": "integratedTerminal"
-    },
-    {
       "name": "Python: ex2",
       "type": "python",
       "request": "launch",

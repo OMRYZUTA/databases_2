@@ -51,7 +51,7 @@ def get_initial_algebric_expression():
 
 
 def apply_and_show_rule(i_alg_expr, i_rule):
-    print("before:", end="")
+    print("before:")
     print(i_alg_expr)
     i_alg_expr.apply_rule(i_rule)
     print(

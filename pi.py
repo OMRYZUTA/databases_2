@@ -46,8 +46,7 @@ class PI:
         return self
     
     def estimate_size(self):
-        num_of_rows = None
-        
+        num_of_rows = None        
         before_size_of_row = None
         after_size_of_row = None
 
@@ -55,8 +54,7 @@ class PI:
         if(num_of_rows == None and before_size_of_row == None):
             (num_of_rows, before_size_of_row) = self.applies_to.estimate_size()
         
-        after_size_of_row = len(self.attribute_list) *4
-
+        after_size_of_row = min(before_size_of_row, len(self.attribute_list) *tables.Table_R["att_size"])
 
         msg = f"""
         PI        
