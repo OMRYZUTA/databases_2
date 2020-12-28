@@ -9,6 +9,7 @@ class Algebric_Expression:
 
     def apply_rule(self, rule_type):
         self.root = self.root.apply_rule(rule_type)
-
+    def estimate_size(self):
+        self.root.estimate_size()
    
 

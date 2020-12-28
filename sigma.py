@@ -35,21 +35,21 @@ class SIGMA:
         return "SIGMA"
 
     def matches_11b(self):
-        if(self.condition.data == "AND"):
-            cond_att_list = self.condition.get_all_atts_in_cond()
-            common_columns = {"R.D", "R.E", "S.D", "S.E"}
-            result = True
-            for att in common_columns:
-                result = result and (att in cond_att_list)
+        if(self.applies_to.get_type()=="CARTESIAN"):
+            if(self.condition.data == "AND"):
+                cond_att_list = self.condition.get_all_atts_in_cond()
+                common_columns = {"R.D", "R.E", "S.D", "S.E"}
+                result = True
+                for att in common_columns:
+                    result = result and (att in cond_att_list)
 
-            if (result):
-                left_cond = self.condition.left
-                right_cond = self.condition.right
-                if(left_cond.data == "=" and right_cond.data == "="):
-                    if(left_cond.are_different_tables() and right_cond.are_different_tables()):
-                        if(left_cond.are_same_attributes() and right_cond.are_same_attributes()):
-                            return True
-
+                if (result):
+                    left_cond = self.condition.left
+                    right_cond = self.condition.right
+                    if(left_cond.data == "=" and right_cond.data == "="):
+                        if(left_cond.are_different_tables() and right_cond.are_different_tables()):
+                            if(left_cond.are_same_attributes() and right_cond.are_same_attributes()):
+                                return True
         return False
 
     def matches_6(self):

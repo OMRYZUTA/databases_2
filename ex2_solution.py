@@ -93,7 +93,10 @@ def question_1():
 
 def question_3():
     alg_expressions = question_2()
-    #final_operator = estimate_size_rec(alg_expressions[0])
+    for alg_expr in alg_expressions:
+        print(f" \n estimat cost :{alg_expr}*****************************")
+        alg_expr.estimate_size()
+        print("*****************************************************")
 
 
 def show_main_menu():
