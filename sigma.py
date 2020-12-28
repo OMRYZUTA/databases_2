@@ -187,7 +187,7 @@ def estimate_simple_condition_propability(i_condition):
 
 def estimate_condition_rec(i_condition):
     propablity = None
-
+    #assuming the only valid simple condition is with ""="" operator
     if(i_condition.data == "="):  # meaning it's a simple condition
         propablity = estimate_simple_condition_propability(i_condition)
     elif(i_condition.data == "AND"):

@@ -33,8 +33,12 @@ def get_optimization_rule():
     for key, value in optimization_rules.items():
         message += key + ":\t" + value + "\n"
 
-    optimization_rule = input(message)
-    return optimization_rule
+    optimization_rule = input(message)    
+    
+    if optimization_rule in optimization_rules:   
+        return optimization_rule
+    else:
+        raise Exception("invalid rule chosen")   
 
 
 def get_initial_algebric_expression():
@@ -67,8 +71,8 @@ def randomly_apply_10_rules(i_alg_expr):
 
 
 def question_1():
-    alg_expr = get_initial_algebric_expression()
-    optimization_rule = get_optimization_rule()
+    alg_expr = get_initial_algebric_expression()    
+    optimization_rule = get_optimization_rule()    
     apply_and_show_rule(alg_expr, optimization_rule)
 
 
@@ -92,10 +96,13 @@ def question_3():
     alg_expressions = question_2()
     
     for alg_expr in alg_expressions:
-        print(f" \n estimate cost of:{alg_expr}")
-        alg_expr.estimate_size()
-        print("*****************************************************")
-
+        try:
+            print(f" \n estimate cost of:{alg_expr}")
+            alg_expr.estimate_size()
+            print("*****************************************************")
+        except Exception as err:
+            print("*** invalid query for estimation ***")
+        
 
 def show_main_menu():
     message = """
