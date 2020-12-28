@@ -2,6 +2,7 @@ import tables
 from ex2_parser import R_attributes, S_attributes
 from conditionTree import cond_tree_node
 import sigma
+
 class NJOIN:
     scheme1 = None
     scheme2 = None
@@ -11,24 +12,30 @@ class NJOIN:
         self.scheme1 = scheme1
         self.scheme2 = scheme2
 
+    
     def __str__(self):
         string = "NJOIN"
         string += "("+self.scheme1+","+self.scheme2+")"
 
         return string
 
+    
     def __add__(self, other):
         return str(self) + other
 
+    
     def __radd__(self, other):
         return other + str(self)
 
+    
     def get_type(self):
         return "NJOIN"
 
+    
     def apply_rule(self, rule_type):
         return self
 
+    
     def get_all_attributes_from_scheme(self, i_scheme):
         if(i_scheme == 'R'):
             att_list = R_attributes
@@ -39,6 +46,7 @@ class NJOIN:
 
         return att_list
 
+    
     def get_all_attributes(self, i_scheme=None):
         att_list = None
 
@@ -80,14 +88,15 @@ class NJOIN:
 
 
 def esitmate_njoin_rows(i_num_of_rows):
-    #building the njoin condition
+    #building the NJOIN condition
     RD = cond_tree_node("R.D", "ATTRIBUTE")
     SD = cond_tree_node("S.D", "ATTRIBUTE")
     RE = cond_tree_node("R.E", "ATTRIBUTE")
-    SE = cond_tree_node("S.E", "ATTRIBUTE")
-      
+    SE = cond_tree_node("S.E", "ATTRIBUTE")      
     simp_cond_1 = cond_tree_node("=", "REL_OP", RD, SD)
     simp_cond_2 = cond_tree_node("=", "REL_OP", RE, SE)
     and_cond = cond_tree_node("AND","LOGIC_OP",simp_cond_1,simp_cond_2)
+
     propablity = sigma.estimate_condition_rec(and_cond)
+
     return int(propablity*i_num_of_rows)

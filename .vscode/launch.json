@@ -15,7 +15,7 @@
       "name": "Python: ex2",
       "type": "python",
       "request": "launch",
-      "program": "ex2_solution.py",
+      "program": "ex2_main.py",
       "console": "integratedTerminal"
     }
   ]

@@ -10,6 +10,7 @@ class cond_tree_node:
         self.left = left
         self.right = right
 
+    
     def __str__(self):
         result = ""
         if self.left:
@@ -21,12 +22,15 @@ class cond_tree_node:
 
         return result
 
+    
     def __add__(self, other):
         return str(self) + other
 
+    
     def __radd__(self, other):
         return other + str(self)
 
+    
     def get_all_atts_in_cond(self):
         if (self.left is None and self.right is None):  # is leaf
             if (self.node_type == "ATTRIBUTE"):
@@ -60,6 +64,7 @@ class cond_tree_node:
         table2 = self.right.get_attribute_table()
         return (table1 != table2)
 
+    
     def are_same_attributes(self):
         att1 = self.left.get_attribute_alone()
         att2 = self.right.get_attribute_alone()

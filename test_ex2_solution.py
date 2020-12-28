@@ -1,6 +1,6 @@
 import unittest
 from conditionTree import cond_tree_node
-import ex2_solution
+import ex2_main
 import njoin
 import sigma
 from algebric_expression import Algebric_Expression
@@ -29,9 +29,9 @@ class TestTree(unittest.TestCase):
 
         
         query_str= "SELECT R.A,R.B FROM R,S WHERE R.A=10 AND R.B>R.A ;"
-        parsed_query = ex2_solution.ex2_parser.parse_query(query_str)
+        parsed_query = ex2_main.ex2_parser.parse_query(query_str)
         (table_list, attribute_list, condition_tree) = parsed_query
-        self.alg_expr1 = ex2_solution.build_initial_algebric_expression(
+        self.alg_expr1 = ex2_main.build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
         njoin1 = njoin.NJOIN("R","S")
         sigi1 =sigma.SIGMA(self.simple_tree_R_DGreater_4,njoin1)
@@ -62,9 +62,9 @@ class TestTree(unittest.TestCase):
         self.alg_expr1.apply_rule("6")
         self.assertEqual(self.alg_expr1.__str__(),"PI[R.A,R.B](CARTESIAN(SIGMA[((R.A=10)AND(R.B>R.A))](R),S))")
         query_str= "SELECT R.A,R.B FROM R,S WHERE R.A=10 AND R.B>S.E ;"
-        parsed_query = ex2_solution.ex2_parser.parse_query(query_str)
+        parsed_query = ex2_main.ex2_parser.parse_query(query_str)
         (table_list, attribute_list, condition_tree) = parsed_query
-        self.alg_expr3 = ex2_solution.build_initial_algebric_expression(
+        self.alg_expr3 = ex2_main.build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
         self.alg_expr3.apply_rule("6")
         self.assertEqual(self.alg_expr3.__str__(),"PI[R.A,R.B](SIGMA[((R.A=10)AND(R.B>S.E))](CARTESIAN(R,S)))")
@@ -74,9 +74,9 @@ class TestTree(unittest.TestCase):
         self.alg_expr_rule6a.apply_rule("6a")
         self.assertEqual(self.alg_expr_rule6a.__str__(),"NJOIN(R,SIGMA[(S.D>4)](S))")
         query_str= "SELECT R.A,R.B FROM R,S WHERE S.E=10 AND S.D>S.F ;"
-        parsed_query = ex2_solution.ex2_parser.parse_query(query_str)
+        parsed_query = ex2_main.ex2_parser.parse_query(query_str)
         (table_list, attribute_list, condition_tree) = parsed_query
-        self.alg_expr4 = ex2_solution.build_initial_algebric_expression(
+        self.alg_expr4 = ex2_main.build_initial_algebric_expression(
         table_list, attribute_list, condition_tree)
         self.alg_expr4.apply_rule("6a")
         self.assertEqual(self.alg_expr4.__str__(),"PI[R.A,R.B](CARTESIAN(R,SIGMA[((S.E=10)AND(S.D>S.F))](S)))")      

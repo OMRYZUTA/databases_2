@@ -12,18 +12,22 @@ class SIGMA:
         self.condition = condition
         self.applies_to = applies_to
 
+    
     def __str__(self):
         string = "SIGMA"
         string += "["+self.condition+"]"
         string += "("+self.applies_to+")"
         return string
 
+    
     def __add__(self, other):
         return str(self) + other
 
+    
     def __radd__(self, other):
         return other + str(self)
 
+    
     def check_all_cond_attributes_from(self, attribute_list):
         result = True
         all_cond_attributes = self.condition.get_all_atts_in_cond()
@@ -31,9 +35,11 @@ class SIGMA:
             result = result and (att in attribute_list)
         return result
 
+    
     def get_type(self):
         return "SIGMA"
 
+    
     def matches_11b(self):
         if(self.applies_to.get_type()=="CARTESIAN"):
             if(self.condition.data == "AND"):
@@ -52,6 +58,7 @@ class SIGMA:
                                 return True
         return False
 
+    
     def matches_6(self):
         att_list = None
 
@@ -62,6 +69,7 @@ class SIGMA:
 
         return False
 
+    
     def matches_6a(self):
         att_list = None
 
@@ -72,6 +80,7 @@ class SIGMA:
 
         return False
 
+    
     def apply_rule(self, rule_type):
         if (rule_type == "4"):
             if (self.condition.data == "AND"):
@@ -106,11 +115,11 @@ class SIGMA:
         self.applies_to = self.applies_to.apply_rule(rule_type)
         return self
 
+    
     def estimate_size(self):
-
         before_num_of_rows = None
         after_num_of_rows = None
-        size_of_row = None
+        size_of_row = None # SIGMA will not change size_of_row
 
         (before_num_of_rows, size_of_row) = tables.get_table_size(self.applies_to)
         if(before_num_of_rows == None and size_of_row == None):
@@ -127,6 +136,7 @@ class SIGMA:
         print(msg)
         return (after_num_of_rows, size_of_row)
 
+    
     def get_all_attributes(self, i_scheme=None):
         att_list = None
 
@@ -143,6 +153,7 @@ class SIGMA:
 def get_range_of_attribute(i_attribute):
     attribute = i_attribute.get_attribute_alone()
     table = i_attribute.get_attribute_table()
+    
     return tables.get_range_of_values(table, attribute)
 
 
@@ -150,6 +161,7 @@ def estimate_simple_condition_propability(i_condition):
     attribute_node1 = None
     attribute_node2 = None
     propablity = None
+    
     if(i_condition.left.node_type == "INTEGER" and i_condition.right.node_type == "INTEGER"):
         if(i_condition.left.data == i_condition.right.data):
             propablity = 1.0
@@ -175,12 +187,13 @@ def estimate_simple_condition_propability(i_condition):
 
 def estimate_condition_rec(i_condition):
     propablity = None
+
     if(i_condition.data == "="):  # meaning it's a simple condition
         propablity = estimate_simple_condition_propability(i_condition)
     elif(i_condition.data == "AND"):
         propablity = estimate_condition_rec(
             i_condition.left) * estimate_condition_rec(i_condition.right)
-    # sel(Cond1 or Cond2) = 1 - ((1 - sel(Cond1)) * (1 - sel(Cond2)))
+    # OR calculation: sel(Cond1 or Cond2) = 1 - ((1 - sel(Cond1)) * (1 - sel(Cond2)))
     elif(i_condition.data == "OR"):
         propablity = 1.0-((1.0 - estimate_condition_rec(i_condition.left))
                           * (1-estimate_condition_rec(i_condition.right)))

@@ -1,10 +1,10 @@
 import random
+import copy
 import ex2_parser
 from sigma import SIGMA
 from pi import PI
 from cartesian import CARTESIAN
 from njoin import NJOIN
-import copy
 from algebric_expression import Algebric_Expression
 import tables
 
@@ -21,7 +21,6 @@ optimization_rules = {
 def build_initial_algebric_expression(table_list, attribute_list, condition_tree):
 
     cartesian = CARTESIAN(table_list[0], table_list[0])
-    # if there's only one table it's a cartesian with itself?? delete later
     if(len(table_list) == 2):
         cartesian.scheme2 = table_list[1]
     sigma = SIGMA(condition_tree, cartesian)
@@ -51,11 +50,11 @@ def get_initial_algebric_expression():
 
 
 def apply_and_show_rule(i_alg_expr, i_rule):
-    print("before:")
+    print("before applying rule:")
     print(i_alg_expr)
     i_alg_expr.apply_rule(i_rule)
     print(
-        f"after rule {i_rule}: {optimization_rules[i_rule]}")
+        f"after rule {i_rule} - {optimization_rules[i_rule]}:")
     print(i_alg_expr)
 
 
@@ -66,8 +65,11 @@ def randomly_apply_10_rules(i_alg_expr):
         apply_and_show_rule(i_alg_expr, rule)
         print("")
 
-# def estimate_size_rec(i_alg_expr):
-#     if(i_alg_expr.aplie_to ==None):
+
+def question_1():
+    alg_expr = get_initial_algebric_expression()
+    optimization_rule = get_optimization_rule()
+    apply_and_show_rule(alg_expr, optimization_rule)
 
 
 def question_2():
@@ -76,35 +78,31 @@ def question_2():
     alg_expr3 = copy.deepcopy(alg_expr1)
     alg_expr4 = copy.deepcopy(alg_expr1)
     alg_expressions = [alg_expr1, alg_expr2, alg_expr3, alg_expr4]
+    
     for alg_expr in alg_expressions:
         randomly_apply_10_rules(alg_expr)
 
-    print("the 4 resulting alg exp:")
+    print("the 4 resulting logical query plans:")
     for alg_expr in alg_expressions:
         print(f"\n - {alg_expr}")
     return alg_expressions
 
 
-def question_1():
-    alg_expr = get_initial_algebric_expression()
-    optimization_rule = get_optimization_rule()
-    apply_and_show_rule(alg_expr, optimization_rule)
-
-
 def question_3():
     alg_expressions = question_2()
+    
     for alg_expr in alg_expressions:
-        print(f" \n estimat cost :{alg_expr}*****************************")
+        print(f" \n estimate cost of:{alg_expr}")
         alg_expr.estimate_size()
         print("*****************************************************")
 
 
 def show_main_menu():
     message = """
-    please insert the part to check:
-    1 - apply optimization rules
+    please select the part to check:
+    1 - apply single optimization rule
     2 - get 4 random logical query plans
-    3 - Size Estimation
+    3 - estimate size of logical query plans
     """
     choice = input(message)
     if choice == "1":
