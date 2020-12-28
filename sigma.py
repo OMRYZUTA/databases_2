@@ -56,9 +56,9 @@ class SIGMA:
         att_list = None
 
         if(self.applies_to.get_type() == "NJOIN" or
-         self.applies_to.get_type() == "CARTESIAN"):
-                att_list =self.applies_to.get_all_attributes("scheme1")
-                return self.check_all_cond_attributes_from(att_list)
+           self.applies_to.get_type() == "CARTESIAN"):
+            att_list = self.applies_to.get_all_attributes("scheme1")
+            return self.check_all_cond_attributes_from(att_list)
 
         return False
 
@@ -66,9 +66,9 @@ class SIGMA:
         att_list = None
 
         if(self.applies_to.get_type() == "NJOIN" or
-         self.applies_to.get_type() == "CARTESIAN"):
-                att_list =self.applies_to.get_all_attributes("scheme2")
-                return self.check_all_cond_attributes_from(att_list)
+           self.applies_to.get_type() == "CARTESIAN"):
+            att_list = self.applies_to.get_all_attributes("scheme2")
+            return self.check_all_cond_attributes_from(att_list)
 
         return False
 
@@ -106,8 +106,6 @@ class SIGMA:
         self.applies_to = self.applies_to.apply_rule(rule_type)
         return self
 
-    
-
     def estimate_size(self):
 
         before_num_of_rows = None
@@ -117,9 +115,9 @@ class SIGMA:
         (before_num_of_rows, size_of_row) = tables.get_table_size(self.applies_to)
         if(before_num_of_rows == None and size_of_row == None):
             (before_num_of_rows, size_of_row) = self.applies_to.estimate_size()
-        
-        after_num_of_rows = estimate_condition_rec(self.condition, before_num_of_rows)
-
+            
+        propablity = estimate_condition_rec(self.condition)
+        after_num_of_rows = int(before_num_of_rows * propablity)
 
         msg = f"""
         SIGMA        
@@ -133,38 +131,57 @@ class SIGMA:
         att_list = None
 
         if(self.applies_to == 'R'):
-                att_list = R_attributes
+            att_list = R_attributes
         elif(self.applies_to == 'S'):
-                att_list = S_attributes
-        else:        
-            att_list= self.applies_to.get_all_attributes()
+            att_list = S_attributes
+        else:
+            att_list = self.applies_to.get_all_attributes()
 
-        return  att_list
+        return att_list
 
-def estimate_simple_condition_rows(i_condition, i_before_num_of_rows):
-        attribute_node = None
 
-        if(i_condition.left.node_type == "ATTRIBUTE"):
-            attribute_node = i_condition.left
-        elif(i_condition.right.node_type == "ATTRIBUTE"):
-            attribute_node = i_condition.right
-        attribute = attribute_node.get_attribute_alone()
-        table = attribute_node.get_attribute_table()
-        range_of_attribute = tables.get_range_of_values(table, attribute)
-        return int(i_before_num_of_rows / range_of_attribute)
+def get_range_of_attribute(i_attribute):
+    attribute = i_attribute.get_attribute_alone()
+    table = i_attribute.get_attribute_table()
+    return tables.get_range_of_values(table, attribute)
 
-def estimate_condition_rec(i_condition, i_before_num_of_rows):
-    after_num_of_rows = None
+
+def estimate_simple_condition_propability(i_condition):
+    attribute_node1 = None
+    attribute_node2 = None
+    propablity = None
+    if(i_condition.left.node_type == "INTEGER" and i_condition.right.node_type == "INTEGER"):
+        if(i_condition.left.data == i_condition.right.data):
+            propablity = 1.0
+        else:
+            propablity = 0.0
+    elif(i_condition.left.node_type == "ATTRIBUTE" and i_condition.right.node_type == "INTEGER"):
+        attribute_node1 = i_condition.left
+        range_of_attribute = get_range_of_attribute(attribute_node1)
+        propablity = 1.0 / range_of_attribute
+    elif(i_condition.left.node_type == "INTEGER" and i_condition.right.node_type == "ATTRIBUTE"):
+        attribute_node1 = i_condition.right
+        range_of_attribute = get_range_of_attribute(attribute_node1)
+        propablity = 1.0 / range_of_attribute
+    elif(i_condition.left.node_type == "ATTRIBUTE" and i_condition.right.node_type == "ATTRIBUTE"):
+        attribute_node1 = i_condition.left
+        attribute_node2 = i_condition.right
+        range_of_attribute = max(get_range_of_attribute(
+            attribute_node1), get_range_of_attribute(attribute_node2))
+        propablity = 1.0 / range_of_attribute
+
+    return propablity
+
+
+def estimate_condition_rec(i_condition):
+    propablity = None
     if(i_condition.data == "="):  # meaning it's a simple condition
-            after_num_of_rows = estimate_simple_condition_rows(i_condition, i_before_num_of_rows)
-    elif(i_condition.data =="AND"):
-        left_num_of_rows = estimate_condition_rec(i_condition.left, i_before_num_of_rows)
-        right_num_of_rows = estimate_condition_rec(i_condition.right, i_before_num_of_rows)
-        after_num_of_rows= (left_num_of_rows*right_num_of_rows) / i_before_num_of_rows
-    elif(i_condition.data =="OR"):
-        left_num_of_rows = estimate_condition_rec(i_condition.left, i_before_num_of_rows)
-        right_num_of_rows = estimate_condition_rec(i_condition.right, i_before_num_of_rows)
-        after_num_of_rows= left_num_of_rows + right_num_of_rows 
-    
-    return int(after_num_of_rows)
-
+        propablity = estimate_simple_condition_propability(i_condition)
+    elif(i_condition.data == "AND"):
+        propablity = estimate_condition_rec(
+            i_condition.left) * estimate_condition_rec(i_condition.right)
+    # sel(Cond1 or Cond2) = 1 - ((1 - sel(Cond1)) * (1 - sel(Cond2)))
+    elif(i_condition.data == "OR"):
+        propablity = 1.0-((1.0 - estimate_condition_rec(i_condition.left))
+                          * (1-estimate_condition_rec(i_condition.right)))
+    return propablity
